@@ -32,7 +32,11 @@ cvt_id <- function(db, data, from.id, to.id, desc=FALSE, other=NULL) {
     msg <- 'Please install the "AnnotationDbi" package!'
     warning(msg); return(msg)
   }; if (TRUE %in% desc) desc <- 'GENENAME' else desc <- NULL
-  if (!is(data, 'SummarizedExperiment')) if (is(as.data.frame(data), 'data.frame')) data <- SummarizedExperiment(assays=data)
+  vec <- FALSE
+  if (!is(data, 'SummarizedExperiment')) if (is(data, 'character')) {
+    if (any(duplicated(data))) return(wng('Duplicated IDs are detected!'))
+    data <- SummarizedExperiment(assays=matrix(rep(0, length(data)*2), ncol=2, dimnames = list(data, c('value1', 'value2')))); vec <- TRUE
+  } else if (is(as.data.frame(data), 'data.frame')) data <- SummarizedExperiment(assays=data)
   ann <- AnnotationDbi::select(get(db), keys=rownames(data), keytype=from.id, columns=c(from.id, to.id, desc, other))
   rdat <- rowData(data)
   if (ncol(rdat)>0) ann <- cbind(rdat[ann[, from.id], ], ann)
@@ -47,7 +51,7 @@ cvt_id <- function(db, data, from.id, to.id, desc=FALSE, other=NULL) {
   # ids from data: not available in the database.
   data.dif <- data[setdiff(rownames(data), inter), , drop=FALSE]
   # Convert ids.
-  data <- data[inter, , drop=FALSE]
+  dat <- data; data <- data[inter, , drop=FALSE]
   ann <- subset(ann, get(from.id) %in% inter & (!duplicated(get(from.id))))
   data <- data[order(rownames(data)), , drop=FALSE]
   ann <- ann[order(ann[, from.id]), , drop=FALSE]
@@ -65,7 +69,11 @@ cvt_id <- function(db, data, from.id, to.id, desc=FALSE, other=NULL) {
       if (!is.null(desc)) data.dif$desc <- NA
       data <- rbind(data, data.dif)
     }
-  }; data
+  }
+  # Keep original row orders
+  r1 <- rownames(dat); r2 <- rowData(data)[, from.id]; data <- data[match(r1, r2), ]
+  if (vec==TRUE) {
+    if (is.null(desc)) des <- NULL else des <- 'desc'
+    return(rowData(data)[, c(from.id, to.id, des)])
+  } else data
 }
-
-
