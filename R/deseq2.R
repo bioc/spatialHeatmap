@@ -117,14 +117,14 @@ deseq2 <- function(se, com.factor, method.adjust='BH', return.all=FALSE, log2.fc
         # the default comparison is treatment VS reference. Regardless of reference, the comparison 
         # can be specified by "contrast" in "results" such as "contrast=c('condition', 'treatment', 'control')" 
         # is "treatment VS control" even though reference is "treatment".
-        dds0 <- DESeqDataSet(se0, design = ~ variable + feature)
+        dds0 <- DESeq2::DESeqDataSet(se0, design = ~ variable + feature)
         contr <- c('feature', com[2, i], com[1, i])
       }
       if (com.by=='variable') { 
-        dds0 <- DESeqDataSet(se0, design = ~ feature + variable) 
+        dds0 <- DESeq2::DESeqDataSet(se0, design = ~ feature + variable) 
         contr <- c('variable', com[2, i], com[1, i])
       }; if (verbose==TRUE) message(contr[2], '-', contr[3])
-      dds0 <- DESeq(dds0)
+      dds0 <- DESeq2::DESeq(dds0)
       df0 <- as.data.frame(DESeq2::results(object=dds0, contrast=contr, pAdjustMethod=method.adjust)[, c('log2FoldChange', 'padj')])
       colnames(df0) <- paste0(contr[2], '_VS_', contr[3], '_', colnames(df0)); df.all <- cbind(df.all, df0)
     }; sam.all <- unique(vari)

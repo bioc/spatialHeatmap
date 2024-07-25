@@ -142,8 +142,8 @@
 
 \item{legend.nrow}{An integer of the total rows of keys in the legend plot. The default is NULL. It is only applicable to the legend plot. If both \code{legend.ncol} and \code{legend.nrow} are used, the product of the two arguments should be equal or larger than the total number of matching spatial features.}
 
-\item{legend.position}{the position of legends ("none", "left", "right",
-"bottom", "top", or two-element numeric vector)}
+\item{legend.position}{the default position of legends ("none", "left",
+"right", "bottom", "top", "inside")}
 
 \item{legend.direction}{layout of items in legends ("horizontal" or
 "vertical")}
@@ -215,7 +215,7 @@ placed in an adjacent directory.}
 \item{legend.value.vdo}{Logical. If `TRUE`, numeric values of colored spatial features are added to the video legend. The default is NULL.}
 
 \item{...}{additional element specifications not part of base ggplot2. In general,
-these should also be defined in the \verb{element tree} argument.}
+these should also be defined in the \verb{element tree} argument. \link[rlang:splice]{Splicing} a list is also supported.}
 }
 \value{
 An image of spatial heatmap(s), a two-component list of the spatial heatmap(s) in \code{ggplot} format and a \code{data.frame} of mapping between assayed samples and aSVG features.

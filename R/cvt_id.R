@@ -28,6 +28,7 @@
 #' @importFrom SummarizedExperiment SummarizedExperiment rowData rowData<-
 
 cvt_id <- function(db, data, from.id, to.id, desc=FALSE, other=NULL) {
+  # save(db, data, from.id, to.id, desc, other, file='cvt.id.arg')
   if (!requireNamespace("AnnotationDbi", quietly = TRUE)) {
     msg <- 'Please install the "AnnotationDbi" package!'
     warning(msg); return(msg)
@@ -71,7 +72,7 @@ cvt_id <- function(db, data, from.id, to.id, desc=FALSE, other=NULL) {
     }
   }
   # Keep original row orders
-  r1 <- rownames(dat); r2 <- rowData(data)[, from.id]; data <- data[match(r1, r2), ]
+  r1 <- rownames(dat); r2 <- rowData(data)[, from.id]; data <- data[base::match(r1, r2), ]
   if (vec==TRUE) {
     if (is.null(desc)) des <- NULL else des <- 'desc'
     return(rowData(data)[, c(from.id, to.id, des)])
