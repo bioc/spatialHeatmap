@@ -223,7 +223,6 @@ opt_dir <- function(wk.dir, sub.dir, batch.par, multi.core.par) {
 #' Amezquita R, Lun A, Becht E, Carey V, Carpp L, Geistlinger L, Marini F, Rue-Albrecht K, Risso D, Soneson C, Waldron L, Pages H, Smith M, Huber W, Morgan M, Gottardo R, Hicks S (2020). "Orchestrating single-cell analysis with Bioconductor." _Nature Methods_, *17*, 137-145. <https://www.nature.com/articles/s41592-019-0654-x>.
 #' SummarizedExperiment: SummarizedExperiment container. R package version 1.10.1 \cr R Core Team (2018). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/
 
-#' @importFrom scuttle calculateCPM
 #' @importFrom SingleCellExperiment SingleCellExperiment
 #' @importFrom SummarizedExperiment colData colData<-
 
@@ -243,8 +242,9 @@ norm_opt <- function(cell, bulk, norm, com=FALSE) {
     int <- intersect(rownames(bulk), rownames(cell)) 
     sce <- cbind(bulk[int, ], cell[int, ]) 
     colnames(sce) <- seq_len(ncol(sce))  
-    if ('CPM' %in% norm) { 
-      cnt.cpm <- calculateCPM(sce); nor <- log2(cnt.cpm+1)
+    if ('CPM' %in% norm) {
+      pkg <- check_pkg('scuttle'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
+      cnt.cpm <- scuttle::calculateCPM(sce); nor <- log2(cnt.cpm+1)
       nor <- SingleCellExperiment(assays=list(logcounts=as.matrix(nor)))
      colData(nor) <- colData(sce)
     } else if ('TMM' %in% norm) {

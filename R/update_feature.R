@@ -53,7 +53,6 @@
 #' Gregory R. Warnes, Ben Bolker, Lodewijk Bonebakker, Robert Gentleman, Wolfgang Huber, Andy Liaw, Thomas Lumley, Martin Maechler, Arni Magnusson, Steffen Moeller, Marc Schwartz and Bill Venables (2020). gplots: Various R Programming Tools for Plotting Data. R package version 3.0.3. https://CRAN.R-project.org/package=gplots
 
 #' @export update_feature
-#' @importFrom gplots col2hex
 #' @importFrom xml2 read_xml xml_children xml_length xml_attr xml_set_attr xml_name xml_add_child xml_set_text write_xml
 
 update_feature <- function(df.new, dir) {
@@ -125,7 +124,8 @@ update_feature <- function(df.new, dir) {
           #xml_set_attr(nod0, 'style', sty.new)
         } # Update stroke width.
         if ('colornew' %in% cna.new) {
-          col <- paste0('fill:', col2hex(df1$colornew[j]))
+          pkg <- check_pkg('gplots'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
+          col <- paste0('fill:', gplots::col2hex(df1$colornew[j]))
           sty0 <- col_str(sty0, '^fill:', col)
           # xml_set_attr(nod0, 'style', sty.new)
         } # Update fill colors.

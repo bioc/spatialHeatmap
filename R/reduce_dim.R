@@ -32,24 +32,24 @@
 
 #' @export reduce_dim 
 #' @importFrom SingleCellExperiment SingleCellExperiment 
-#' @importFrom scran modelGeneVar getTopHVGs denoisePCA 
-#' @importFrom scater runUMAP runTSNE
 
 reduce_dim <- function(sce, prop=0.1, min.dim=13, max.dim=50, model.var=list(assay.type="logcounts"), top.hvg=list(), de.pca=list(assay.type = "logcounts"), pca=FALSE, tsne=list(dimred="PCA", ncomponents=2), umap=list(dimred="PCA")) {
   # getTopHVGs: prop=0.1 is super more important than n=3000 in co-clustering.
   #  save(sce, prop, min.dim, max.dim, model.var, top.hvg, de.pca, pca, tsne, umap, file='reduce.dim.arg')
+  pkg <- check_pkg('scran'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
+  pkg <- check_pkg('scater'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
   min.dim <- as.numeric(min.dim); max.dim <- as.numeric(min.dim)
   if (is(sce, 'dgCMatrix')|is(sce, 'matrix')|is(sce, 'data.frame')) {
     if (all(round(sce)==sce)) stop('The "sce" should be in log2 scale!')
     sce <- SingleCellExperiment(list(logcounts=as.matrix(sce)))
   }
   # Use logcounts by default.
-  df.var.sc <- do.call(modelGeneVar, c(list(x=sce), model.var))
-  top.hvgs.sc <- do.call(getTopHVGs, c(list(stats=df.var.sc, prop=prop), top.hvg))
+  df.var.sc <- do.call(scran::modelGeneVar, c(list(x=sce), model.var))
+  top.hvgs.sc <- do.call(scran::getTopHVGs, c(list(stats=df.var.sc, prop=prop), top.hvg))
   max.pc <- (length(top.hvgs.sc) - 1) / 2
   # Avoid warning (the max returned PCS should be <= 50% of length(top.hvgs.sc) - 1).
   if (max.pc < max.dim | max.pc < min.dim) {
-    top.hvgs.sc <- getTopHVGs(df.var.sc, prop=1)
+    top.hvgs.sc <- scran::getTopHVGs(df.var.sc, prop=1)
     cat('"prop" is set 1 in "getTopHVGs" due to too less genes. \n')
     max.pc <- (length(top.hvgs.sc) - 1) / 2
     if (max.pc < max.dim | max.pc < min.dim) {
@@ -59,7 +59,7 @@ reduce_dim <- function(sce, prop=0.1, min.dim=13, max.dim=50, model.var=list(ass
   # prop=1 cannot avoid all warnings if the real max.dim does not increase even though prop=1.
   sce.dimred <- tryCatch(
     expr = {
-      do.call(denoisePCA, c(list(x=sce, technical=df.var.sc, subset.row=top.hvgs.sc, min.rank=min.dim, max.rank=max.dim), de.pca))
+      do.call(scran::denoisePCA, c(list(x=sce, technical=df.var.sc, subset.row=top.hvgs.sc, min.rank=min.dim, max.rank=max.dim), de.pca))
     },
     warning = function(w){ 'w' }, error = function(e){ 'e' } 
   ) 
@@ -71,9 +71,9 @@ reduce_dim <- function(sce, prop=0.1, min.dim=13, max.dim=50, model.var=list(ass
   # runUMAP returns different results before/after runTSNE.
   # Avoid warnings due to duplicated column names.
   cna <- colnames(sce.dimred); colnames(sce.dimred) <- seq_len(ncol(sce.dimred)) 
-  sce.dimred <- do.call(runUMAP, c(list(x=sce.dimred, ncomponents=min.dim), umap))
+  sce.dimred <- do.call(scater::runUMAP, c(list(x=sce.dimred, ncomponents=min.dim), umap))
   # Row names in colData, reducedDim change accordingly.
   colnames(sce.dimred) <- cna
-  sce.dimred <- do.call(runTSNE, c(list(x=sce.dimred), tsne))
+  sce.dimred <- do.call(scater::runTSNE, c(list(x=sce.dimred), tsne))
   return(sce.dimred)
 }

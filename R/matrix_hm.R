@@ -47,7 +47,6 @@
 #' @importFrom SummarizedExperiment assays
 #' @importFrom ggplot2 ggplot geom_segment geom_text position_dodge geom_rect theme theme_minimal geom_tile scale_fill_gradient geom_hline
 #' @importFrom stats hclust order.dendrogram as.dendrogram
-#' @importFrom gplots heatmap.2 
 #' @importFrom graphics image mtext par plot title
 #' @importFrom grDevices dev.off png
 
@@ -68,15 +67,16 @@ matrix_hm <- function(ID, data, assay.na=NULL, scale='row', col=c('yellow', 'red
   # The default hclust method is 'complete'.
   mod <- as.matrix(gene); dd.gen <- as.dendrogram(hclust(dist(mod))) 
   if (static==TRUE) {
+    pkg <- check_pkg('gplots'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
     tmp <- normalizePath(tempdir(check=TRUE), winslash="/", mustWork=FALSE); pa <- paste0(tmp, '/delete_hm.png')
-    png(pa); hm <- heatmap.2(x=mod, scale=scale, main=main, trace="none"); dev.off()
+    png(pa); hm <- gplots::heatmap.2(x=mod, scale=scale, main=main, trace="none"); dev.off()
     do.call(file.remove, list(pa))
     # Select the row of target gene.  
     idx <- which(rev(colnames(hm$carpet) %in% ID))
     # If colour codes are more than 500, the colour key is blank.
     lis1 <- c(arg.lis1, list(x=mod, scale=scale, main=main, margin=margin, col=colorRampPalette(col)(col.n), keysize=keysize, rowsep=c(idx-1, idx), cexCol=cexCol, cexRow=cexRow, srtRow=angleRow, srtCol=angleCol, dendrogram='both', sepcolor=sep.color, sepwidth=c(sep.width, sep.width), key=TRUE, trace="none", density.info="none", Rowv=TRUE, Colv=TRUE))
     # The default hclust method is 'complete'.
-    res <- do.call(heatmap.2, lis1)
+    res <- do.call(gplots::heatmap.2, lis1)
     # Cutting row dendrograms.
     h.max <- ceiling(rev(dendextend::get_branches_heights(res$rowDendrogram))[1])
     if (missing(cut.h)) cut.h <- h.max * 0.2

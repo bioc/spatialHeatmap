@@ -190,6 +190,7 @@ sf_var <- function(data, feature, ft.sel=NULL, variable=NULL, var.sel=NULL, com.
 
 spatial_enrich <- function(data, method=c('edgeR'), norm='TMM', m.array=FALSE, pairwise=FALSE, log2.fc=1, p.adjust='BH', fdr=0.05, outliers=0, aggr='mean', log2.trans=TRUE, verbose=TRUE) {
   # save(data, method, norm, m.array, log2.fc, p.adjust, fdr, outliers, aggr, log2.trans, file='spatial.enrich.arg')
+  variable <- feature <- NULL
   if (pairwise==TRUE) { # Check pairing.
     cdat <- colData(data); fts <- data$feature; vars <- data$variable
     fts.u <- unique(fts); vars.u <- unique(vars)

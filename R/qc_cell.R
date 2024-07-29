@@ -22,15 +22,15 @@
 
 #' @export qc_cell
 #' @importFrom SingleCellExperiment altExpNames 
-#' @importFrom scuttle perCellQCMetrics perCellQCFilters
 
 qc_cell <- function(sce, qc.metric=list(threshold=1), qc.filter=list(nmads=3)) {
+  pkg <- check_pkg('scuttle'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
   # Quality control.
-  stats <- do.call(perCellQCMetrics, c(list(x=sce), qc.metric))
+  stats <- do.call(scuttle::perCellQCMetrics, c(list(x=sce), qc.metric))
   # Discard unreliable cells.
   sub.fields <- 'subsets_Mt_percent'
   ercc <- 'ERCC' %in% altExpNames(sce)
   if (ercc) sub.fields <- c('altexps_ERCC_percent', sub.fields)
-  qc <- do.call(perCellQCFilters, c(list(x=stats, sub.fields=sub.fields), qc.filter))
+  qc <- do.call(scuttle::perCellQCFilters, c(list(x=stats, sub.fields=sub.fields), qc.filter))
   sce <- sce[, !qc$discard]; return(sce)
 }

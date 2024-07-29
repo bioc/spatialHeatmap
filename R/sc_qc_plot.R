@@ -15,17 +15,17 @@
 #' Baptiste Auguie (2017). gridExtra: Miscellaneous Functions for "Grid" Graphics. R package version 2.3. https://CRAN.R-project.org/package=gridExtra.
 
 #' @importFrom ggplot2 ggplot theme_void scale_y_log10 scale_x_log10
-#' @importFrom scater plotColData
 #' @importFrom gridExtra grid.arrange
 
 sc_qc_plot <- function(sce.unfil, ercc = FALSE) {
-  g.sum <- plotColData(sce.unfil, y="sum", colour_by="discard") + scale_y_log10() + ggtitle("Total count") 
-  g.det <- plotColData(sce.unfil, y="detected", colour_by="discard") + scale_y_log10() + ggtitle("Detected features")              
-  g.mt.per <- plotColData(sce.unfil, y="subsets_Mt_percent", colour_by="discard") + ggtitle("Mito percent") 
-  if (ercc) g.ercc.per <- plotColData(sce.unfil, y="altexps_ERCC_percent", colour_by="discard") + ggtitle("ERCC percent") else g.ercc.per <- ggplot() + theme_void()
+  pkg <- check_pkg('scater'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
+  g.sum <- scater::plotColData(sce.unfil, y="sum", colour_by="discard") + scale_y_log10() + ggtitle("Total count") 
+  g.det <- scater::plotColData(sce.unfil, y="detected", colour_by="discard") + scale_y_log10() + ggtitle("Detected features")              
+  g.mt.per <- scater::plotColData(sce.unfil, y="subsets_Mt_percent", colour_by="discard") + ggtitle("Mito percent") 
+  if (ercc) g.ercc.per <- scater::plotColData(sce.unfil, y="altexps_ERCC_percent", colour_by="discard") + ggtitle("ERCC percent") else g.ercc.per <- ggplot() + theme_void()
   cat('Single cell: mitochondrial counts vs total, spike-in ... \n')
-  g.mt.log <- plotColData(sce.unfil, x="sum", y="subsets_Mt_percent", colour_by="discard") + scale_x_log10()
-  if (ercc) g.mt.ercc <- plotColData(sce.unfil, x="altexps_ERCC_percent", y="subsets_Mt_percent", colour_by="discard") else g.mt.ercc <- ggplot() + theme_void()
+  g.mt.log <- scater::plotColData(sce.unfil, x="sum", y="subsets_Mt_percent", colour_by="discard") + scale_x_log10()
+  if (ercc) g.mt.ercc <- scater::plotColData(sce.unfil, x="altexps_ERCC_percent", y="subsets_Mt_percent", colour_by="discard") else g.mt.ercc <- ggplot() + theme_void()
   if (ercc) grid.arrange(
     g.sum, g.det, g.mt.per, g.ercc.per, g.mt.log, g.mt.ercc,                                                                       
     ncol = 2
