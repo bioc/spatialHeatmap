@@ -38,18 +38,18 @@
 #' @export 
 #' @importFrom SummarizedExperiment colData
 #' @importFrom SingleCellExperiment SingleCellExperiment 
-#' @importFrom scran buildKNNGraph buildSNNGraph 
 
 cluster_cell <- function(sce, graph.meth='knn', dimred='PCA', knn.gr=list(), snn.gr=list(), cluster='wt', wt.arg=list(steps = 4), fg.arg=list(), sl.arg=list(spins = 25), le.arg=list(), eb.arg=list()) {
+  pkg <- check_pkg('scran'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
   if (!is(sce, 'SingleCellExperiment')) stop('The "sce" should be an "SingleCellExperiment" object!')
   if (!dimred %in% reducedDimNames(sce)) stop('The "dimred" is not detected in "reducedDimNames"!')
   if ('cluster' %in% colnames(colData(sce))) stop('The "cluster" is a reserved colname in "colData" to store cluster assignments in this function!')
   # Only one is accepted: assay.type = "logcounts" or use.dimred="PCA".
   if (graph.meth=='knn') { 
-    gr.sc <- do.call(buildKNNGraph, c(list(x=sce, use.dimred=dimred), knn.gr))
+    gr.sc <- do.call(scran::buildKNNGraph, c(list(x=sce, use.dimred=dimred), knn.gr))
   }
   if (graph.meth=='snn') {
-    gr.sc <- do.call(buildSNNGraph, c(list(x=sce, use.dimred=dimred), snn.gr))
+    gr.sc <- do.call(scran::buildSNNGraph, c(list(x=sce, use.dimred=dimred), snn.gr))
   }
   # cluster: detected cell clusters. label: customer clusters.
 

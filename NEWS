@@ -1,4 +1,6 @@
 
+Changes in version 2.11.4 (2024-07-28)
+ + Reduced dependencies. 
 Changes in version 2.11.2 (2024-07-23)
  + The function cvt_id accepts vectors. 
 Changes in version 2.11.1 (2024-06-14)

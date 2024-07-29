@@ -31,10 +31,10 @@
 #' @export
 #' @importFrom SingleCellExperiment altExpNames 
 #' @importFrom SummarizedExperiment colData<- colData
-#' @importFrom scuttle logNormCounts
-#' @importFrom scran quickCluster computeSumFactors 
 
 norm_cell <- function(sce, bulk=NULL, cpm=FALSE, count.kp=FALSE, quick.clus=list(min.size = 100, d=NULL), com.sum.fct=list(max.cluster.size = 3000, min.mean=1), log.norm=list(), com=FALSE, wk.dir=NULL) {
+  pkg <- check_pkg('scran'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
+  pkg <- check_pkg('scuttle'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
   bulkCell <- NULL
   if (!is.null(wk.dir)) norm.dir <- file.path(wk.dir, 'norm_res') else norm.dir <- NULL
   if (!is.null(norm.dir)) if (!dir.exists(norm.dir)) dir.create(norm.dir, recursive = TRUE)
@@ -64,9 +64,9 @@ norm_cell <- function(sce, bulk=NULL, cpm=FALSE, count.kp=FALSE, quick.clus=list
   }
     if (quick.clus$min.size > ncol(sce)) { message('fewer cells than min size in quickCluster!'); return() }
     # Normalization.
-    clusters <- do.call(quickCluster, c(list(x=sce), quick.clus))
-    sce <- do.call(computeSumFactors, c(list(x=sce, cluster=clusters), com.sum.fct))
-    sce <- do.call(logNormCounts, c(list(x=sce), log.norm))
+    clusters <- do.call(scran::quickCluster, c(list(x=sce), quick.clus))
+    sce <- do.call(scran::computeSumFactors, c(list(x=sce, cluster=clusters), com.sum.fct))
+    sce <- do.call(scuttle::logNormCounts, c(list(x=sce), log.norm))
     # CPM.
     if (cpm==TRUE) sce <- cal_cpm(sce)
     if (count.kp==FALSE) assays(sce)$counts <- NULL
@@ -99,12 +99,12 @@ norm_cell <- function(sce, bulk=NULL, cpm=FALSE, count.kp=FALSE, quick.clus=list
 #' Douglas Bates and Martin Maechler (2021). Matrix: Sparse and Dense Matrix Classes and Methods. R package version 1.4-0. https://CRAN.R-project.org/package=Matrix
 
 #' @importFrom SingleCellExperiment logcounts logcounts<-
-#' @importFrom scuttle calculateCPM
 #' @importFrom Matrix Matrix 
 
 cal_cpm <- function(sce.nor) {
+  pkg <- check_pkg('scuttle'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
   log.cnt <- logcounts(sce.nor)
-  cnt.cpm <- calculateCPM(2^log.cnt-1)
+  cnt.cpm <- scuttle::calculateCPM(2^log.cnt-1)
   logcounts(sce.nor) <- Matrix(log2(cnt.cpm+1), sparse=TRUE)
   return(sce.nor)
 }

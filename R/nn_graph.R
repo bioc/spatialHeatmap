@@ -17,15 +17,15 @@
 #' @references 
 #' Lun ATL, McCarthy DJ, Marioni JC (2016). “A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor.” F1000Res., 5, 2122. doi: 10.12688/f1000research.9501.2
 
-#' @importFrom scran buildSNNGraph buildKNNGraph 
 
 nn_graph <- function(sce, method='SNN', use.dimred=NULL, snn.arg=list(k=10, type=c("rank", "number", "jaccard")), snn.arg.more=list(), knn.arg=list(k=10), knn.arg.more=list()) {
   # assays(sce)[['logcounts']] <- as.matrix(assays(sce)[['logcounts']])
   cat('Scell: nearest neighbor graph ... \n')
+  pkg <- check_pkg('scran'); if (is(pkg, 'character')) { warning(pkg); return(pkg) }
   if (method=='SNN') {
     # Only one is accepted: assay.type = "logcounts" or use.dimred="PCA".
-    g <- do.call('buildSNNGraph', c(list(x=sce, use.dimred=use.dimred), snn.arg, snn.arg.more))
+    g <- do.call(scran::buildSNNGraph, c(list(x=sce, use.dimred=use.dimred), snn.arg, snn.arg.more))
   } else if (method=='KNN') {
-    g <- do.call('buildKNNGraph', c(list(x=sce, use.dimred=use.dimred), knn.arg, knn.arg.more)) 
+    g <- do.call(scran::buildKNNGraph, c(list(x=sce, use.dimred=use.dimred), knn.arg, knn.arg.more)) 
   }; return(g)
 }
