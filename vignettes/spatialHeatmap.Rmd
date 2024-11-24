@@ -58,6 +58,8 @@ library(knitr); opts_chunk$set(message=FALSE, warning=FALSE)
 
 # Introduction 
 
+This vignette showcases key functionalities of the `spatialHeatmap` package, with a detailed description of the project available [here](https://spatialheatmap.org/){target='_blank'}.  
+
 ## Motivation
 
 The _spatialHeatmap_ package provides functionalities for visualizing cell-,

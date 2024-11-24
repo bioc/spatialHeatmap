@@ -28,6 +28,8 @@ devtools::install_github("jianhaizhang/spatialHeatmap", build_vignettes=TRUE, de
 
 See user vignettes [here](https://bioconductor.org/packages/devel/bioc/html/spatialHeatmap.html).
 
+# Project website
 
+[https://spatialheatmap.org](https://spatialheatmap.org)
 
 
